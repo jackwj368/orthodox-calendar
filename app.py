@@ -1,6 +1,8 @@
 import requests
 from datetime import date
 from flask import Flask, render_template, request
+import webview
+import threading
 
 app = Flask(__name__)
 
@@ -29,5 +31,20 @@ def home():
     return render_template("index.html", info=info)
 
 
+def run_flask():
+    app.run(debug=False, port=5000)
+
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    flask_thread = threading.Thread(target=run_flask)
+    flask_thread.daemon = True
+    flask_thread.start()
+
+    webview.create_window(
+        "Orthodox Calendar",
+        "http://127.0.0.1:5000",
+        width=600,
+        height=750
+    )
+
+    webview.start()
