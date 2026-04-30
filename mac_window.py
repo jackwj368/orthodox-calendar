@@ -7,11 +7,12 @@ from Cocoa import (
     NSApplication,
     NSApp,
     NSWindow,
+    NSView,
     NSMakeRect,
     NSBackingStoreBuffered,
     NSColor,
     NSFloatingWindowLevel,
-    NSPoint,
+    NSScreen,
 )
 from WebKit import WKWebView
 from Foundation import NSURL, NSURLRequest
@@ -19,21 +20,14 @@ from Foundation import NSURL, NSURLRequest
 
 app = Flask(__name__)
 
+WINDOW_WIDTH = 360
+WINDOW_HEIGHT = 500
+DRAG_BAR_HEIGHT = 40
 
-class DraggableWindow(NSWindow):
+
+class DragBar(NSView):
     def mouseDown_(self, event):
-        self.initial_location = event.locationInWindow()
-
-    def mouseDragged_(self, event):
-        current_location = event.locationInWindow()
-        window_frame = self.frame()
-
-        new_origin = NSPoint(
-            window_frame.origin.x + current_location.x - self.initial_location.x,
-            window_frame.origin.y + current_location.y - self.initial_location.y
-        )
-
-        self.setFrameOrigin_(new_origin)
+        self.window().performWindowDragWithEvent_(event)
 
 
 def get_orthodox_day(calendar):
@@ -67,9 +61,18 @@ def run_flask():
 def create_mac_window():
     NSApplication.sharedApplication()
 
-    frame = NSMakeRect(300, 300, 360, 500)
+    screen = NSScreen.mainScreen()
+    visible_frame = screen.visibleFrame()
 
-    window = DraggableWindow.alloc().initWithContentRect_styleMask_backing_defer_(
+    x_margin = 20
+    y_margin = 5
+
+    x = visible_frame.origin.x + visible_frame.size.width - WINDOW_WIDTH - x_margin
+    y = visible_frame.origin.y + visible_frame.size.height - WINDOW_HEIGHT - y_margin
+
+    frame = NSMakeRect(x, y, WINDOW_WIDTH, WINDOW_HEIGHT)
+
+    window = NSWindow.alloc().initWithContentRect_styleMask_backing_defer_(
         frame,
         0,
         NSBackingStoreBuffered,
@@ -81,14 +84,27 @@ def create_mac_window():
     window.setBackgroundColor_(NSColor.clearColor())
     window.setLevel_(NSFloatingWindowLevel)
 
-    webview = WKWebView.alloc().initWithFrame_(NSMakeRect(0, 0, 360, 500))
+    container = NSView.alloc().initWithFrame_(
+        NSMakeRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)
+    )
+
+    webview = WKWebView.alloc().initWithFrame_(
+        NSMakeRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)
+    )
     webview.setValue_forKey_(False, "drawsBackground")
 
     url = NSURL.URLWithString_("http://127.0.0.1:5000")
     request = NSURLRequest.requestWithURL_(url)
     webview.loadRequest_(request)
 
-    window.setContentView_(webview)
+    drag_bar = DragBar.alloc().initWithFrame_(
+        NSMakeRect(0, WINDOW_HEIGHT - DRAG_BAR_HEIGHT, WINDOW_WIDTH, DRAG_BAR_HEIGHT)
+    )
+
+    container.addSubview_(webview)
+    container.addSubview_(drag_bar)
+
+    window.setContentView_(container)
     window.makeKeyAndOrderFront_(None)
 
     NSApp.run()
