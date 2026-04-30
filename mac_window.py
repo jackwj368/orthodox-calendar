@@ -64,11 +64,10 @@ def create_mac_window():
     screen = NSScreen.mainScreen()
     visible_frame = screen.visibleFrame()
 
-    x_margin = 20
-    y_margin = 5
+    margin = 20
 
-    x = visible_frame.origin.x + visible_frame.size.width - WINDOW_WIDTH - x_margin
-    y = visible_frame.origin.y + visible_frame.size.height - WINDOW_HEIGHT - y_margin
+    x = visible_frame.origin.x + visible_frame.size.width - WINDOW_WIDTH - margin
+    y = visible_frame.origin.y + visible_frame.size.height - WINDOW_HEIGHT - margin
 
     frame = NSMakeRect(x, y, WINDOW_WIDTH, WINDOW_HEIGHT)
 
