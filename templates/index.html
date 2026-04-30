@@ -3,6 +3,22 @@
 <head>
     <title>Orthodox Calendar</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <script>
+    function msUntilTomorrow() {
+        const now = new Date();
+        const tomorrow = new Date();
+
+        tomorrow.setDate(now.getDate() + 1);
+        tomorrow.setHours(0, 1, 0, 0);
+
+        return tomorrow - now;
+    }
+
+    setTimeout(function () {
+        window.location.reload();
+    }, msUntilTomorrow());
+    </script>
 </head>
 
 <body>
