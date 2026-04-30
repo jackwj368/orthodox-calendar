@@ -20,9 +20,9 @@ from Foundation import NSURL, NSURLRequest
 
 app = Flask(__name__)
 
-WINDOW_WIDTH = 360
-WINDOW_HEIGHT = 500
-DRAG_BAR_HEIGHT = 40
+WINDOW_WIDTH = 336
+WINDOW_HEIGHT = 460
+DRAG_BAR_HEIGHT = 60
 
 
 class DragBar(NSView):
