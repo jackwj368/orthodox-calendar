@@ -1,5 +1,6 @@
 import requests
 from datetime import date
+import tkinter as tk
 
 def get_orthodox_day(calendar):
     today = date.today()
@@ -9,41 +10,57 @@ def get_orthodox_day(calendar):
     response.raise_for_status()
     data = response.json()
 
-    print(f"\nOrthodox Calendar for {today.strftime('%B %d, %Y')} ({calendar})")
-    print("=" * 50)
+    output = []
+    output.append(f"Orthodox Calendar for {today.strftime('%B %d, %Y')} ({calendar})")
+    output.append("=" * 50)
 
+    # feasts
     if data.get("feasts"):
-        print("\nFeasts:")
+        output.append("\nFeasts:")
         for feast in data["feasts"]:
-            print(f"- {feast}")
+            output.append(f"- {feast}")
     else:
-        print("\nFeasts:")
-        print("- No feast day.")
+        output.append("\nFeasts:")
+        output.append("- No feast day.")
 
+    # saints
     if data.get("saints"):
-        print("\nSaints commemorated:")
+        output.append("\nSaints commemorated:")
         for saint in data["saints"]:
-            print(f"- {saint}")
+            output.append(f"- {saint}")
     else:
-        print("\nSaints commemorated:")
-        print("- No saints listed.")
+        output.append("\nSaints commemorated:")
+        output.append("- No saints listed.")
 
-    if "fast_level_desc" in data:
-        print("\nFasting:")
-        print(data["fast_level_desc"])
+    # fasting
+    if data.get("fast_level_desc"):
+        output.append("\nFasting:")
+        output.append(data["fast_level_desc"])
 
-print("Choose calendar:")
-print("1. Gregorian (New Calendar)")
-print("2. Julian (Old Calendar)")
+    return "\n".join(output)
 
-choice = input("Enter 1 or 2: ").strip()
 
-if choice == "1":
-    calendar = "gregorian"
-elif choice == "2":
-    calendar = "julian"
-else:
-    print("Invalid choice, defaulting to Gregorian.")
-    calendar = "gregorian"
+def show_calendar():
+    calendar = "gregorian" if var.get() == 1 else "julian"
+    text_box.delete("1.0", tk.END)
+    result = get_orthodox_day(calendar)
+    text_box.insert(tk.END, result)
 
-get_orthodox_day(calendar)
+
+# setup
+root = tk.Tk()
+root.title("Orthodox Calendar")
+
+var = tk.IntVar(value=1)
+
+tk.Label(root, text="Choose calendar:").pack()
+
+tk.Radiobutton(root, text="Gregorian (New Calendar)", variable=var, value=1).pack()
+tk.Radiobutton(root, text="Julian (Old Calendar)", variable=var, value=2).pack()
+
+tk.Button(root, text="Show Today", command=show_calendar).pack(pady=10)
+
+text_box = tk.Text(root, height=20, width=60)
+text_box.pack()
+
+root.mainloop()
