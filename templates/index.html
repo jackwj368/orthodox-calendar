@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Orthodox Calendar</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <div class="card">
+        <h1>Orthodox Calendar</h1>
+
+        <p class="date">{{ info.date }}</p>
+        <p class="calendar">{{ info.calendar|capitalize }} Calendar</p>
+
+        <div class="buttons">
+            <a href="/?calendar=gregorian">Gregorian</a>
+            <a href="/?calendar=julian">Julian</a>
+        </div>
+
+        <h2>Feasts</h2>
+        {% if info.feasts %}
+            {% for feast in info.feasts %}
+                <p>✦ {{ feast }}</p>
+            {% endfor %}
+        {% else %}
+            <p>No feast day.</p>
+        {% endif %}
+
+        <h2>Saints Commemorated</h2>
+        {% if info.saints %}
+            {% for saint in info.saints %}
+                <p>☦ {{ saint }}</p>
+            {% endfor %}
+        {% else %}
+            <p>No saints listed.</p>
+        {% endif %}
+
+        <h2>Fasting</h2>
+        <p>{{ info.fasting }}</p>
+    </div>
+</body>
+</html>
