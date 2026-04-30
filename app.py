@@ -44,7 +44,8 @@ if __name__ == "__main__":
         "Orthodox Calendar",
         "http://127.0.0.1:5000",
         width=600,
-        height=750
+        height=750,
+        frameless=True,
     )
 
     webview.start()
